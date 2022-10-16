@@ -5,8 +5,9 @@ using System.Web;
 
 namespace MonoProject.Models
 {
-    public class AddMakeViewModel
+    public class ModelViewModel
     {
+        public int ID { get; set; }
         public string Name { get; set; }
         public string Abrv { get; set; }
     }

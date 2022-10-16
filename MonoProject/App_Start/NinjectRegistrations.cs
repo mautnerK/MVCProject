@@ -11,6 +11,8 @@ namespace MonoProject.App_Start
             Bind<System.Data.Entity.DbContext>().To<Service.Data.VehiclesDbContext>();
             Bind<IMakeRepository>().To<MakeRepository>();
             Bind<IMakeService>().To<MakeService>();
+            Bind<IModelRepository>().To<ModelRepository>();
+            Bind<IModelService>().To<ModelService>();
             var mapperConfiguration = new MapperConfiguration(cfg => { cfg.AddProfile<App_Profile>(); });
             Bind<IMapper>().ToConstructor(c => new Mapper(mapperConfiguration)).InSingletonScope();
 

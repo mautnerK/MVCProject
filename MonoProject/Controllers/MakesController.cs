@@ -1,14 +1,13 @@
-﻿using System.Data.Entity;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Net;
 using System.Web.Mvc;
 using MonoProject.Service.Models.Common;
-using Service.Repositories;
 using Service.Service;
 using AutoMapper;
 using MonoProject.Models;
 using MonoProject.Service.Models;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoProject.Controllers
 {
@@ -27,7 +26,7 @@ namespace MonoProject.Controllers
         public async Task<ActionResult> Index()
         {
             var makesVM = mapper.Map<List<MakeViewModel>>(await makeService.GetMakesAsync());
-            return View(makesVM);
+            return View(makesVM.OrderBy(x=> x.Name).Skip(0).Take(10));
         }
 
         // GET: Makes/Details/5
@@ -37,12 +36,12 @@ namespace MonoProject.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            IMake make = await makeService.GetMakeByIdAsync(id);
-            if (make == null)
+            MakeViewModel makeVM = mapper.Map<MakeViewModel>(await makeService.GetMakeByIdAsync(id));
+            if (makeVM == null)
             {
                 return HttpNotFound();
             }
-            return View(make);
+            return View(makeVM);
         }
 
         // GET: Makes/Create
@@ -104,7 +103,7 @@ namespace MonoProject.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            IMake make = await makeService.GetMakeByIdAsync(id);
+            Make make = await makeService.GetMakeByIdAsync(id);
             if (make == null)
             {
                 return HttpNotFound();

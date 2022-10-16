@@ -4,14 +4,12 @@ using MonoProject.Models;
 
 namespace MonoProject
 {
-    public class App_Profile: Profile
+    public class App_Profile : Profile
     {
         public App_Profile()
         {
             CreateMap<Make, MakeViewModel>().ReverseMap();
-
+            CreateMap<Model, ModelViewModel>().ReverseMap();
         }
-
-
     }
 }

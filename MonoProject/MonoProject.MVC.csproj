@@ -165,9 +165,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\AddMakeViewModel.cs" />
     <Compile Include="Models\MakeViewModel.cs" />
-    <Compile Include="Models\UpdateMakeViewModel.cs" />
+    <Compile Include="Models\ModelViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
