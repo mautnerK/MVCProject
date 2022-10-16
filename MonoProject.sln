@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoProject.MVC", "MonoProject\MonoProject.MVC.csproj", "{F77BB97F-AFB2-4E6A-AF99-2E410D948450}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7B5DC1C2-CCBF-4140-8DE6-B708D3AD2E5A} = {7B5DC1C2-CCBF-4140-8DE6-B708D3AD2E5A}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "MonoProject.Service\Service.csproj", "{7B5DC1C2-CCBF-4140-8DE6-B708D3AD2E5A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F77BB97F-AFB2-4E6A-AF99-2E410D948450}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F77BB97F-AFB2-4E6A-AF99-2E410D948450}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F77BB97F-AFB2-4E6A-AF99-2E410D948450}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F77BB97F-AFB2-4E6A-AF99-2E410D948450}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B5DC1C2-CCBF-4140-8DE6-B708D3AD2E5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B5DC1C2-CCBF-4140-8DE6-B708D3AD2E5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B5DC1C2-CCBF-4140-8DE6-B708D3AD2E5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B5DC1C2-CCBF-4140-8DE6-B708D3AD2E5A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4CCE65E4-2026-4268-9806-A766C085DA45}
+	EndGlobalSection
+EndGlobal
