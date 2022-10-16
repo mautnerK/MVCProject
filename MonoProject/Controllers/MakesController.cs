@@ -2,12 +2,14 @@
 using System.Net;
 using System.Web.Mvc;
 using MonoProject.Service.Models.Common;
+using PagedList;
 using Service.Service;
 using AutoMapper;
 using MonoProject.Models;
 using MonoProject.Service.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace MonoProject.Controllers
 {
@@ -23,10 +25,40 @@ namespace MonoProject.Controllers
         }
 
         // GET: Makes
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.NameSortParmAbrv = string.IsNullOrEmpty(sortOrder) ? "abrv_desc" : "";
             var makesVM = mapper.Map<List<MakeViewModel>>(await makeService.GetMakesAsync());
-            return View(makesVM.OrderBy(x=> x.Name).Skip(0).Take(10));
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+            int pageSize = 3;
+            int pageNumber = (page ?? 1);
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                return View(makesVM.Where(x=> x.Name.Contains(searchString) || x.Abrv.Contains(searchString)).ToPagedList(pageNumber, pageSize));
+            }
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    return View(makesVM.OrderByDescending(x => x.Name).ToPagedList(pageNumber, pageSize));
+                case "Abrv":
+                    return View(makesVM.OrderBy(x => x.Abrv).ToPagedList(pageNumber, pageSize));
+                case "abrv_desc":
+                    return View(makesVM.OrderByDescending(x => x.Abrv).ToPagedList(pageNumber, pageSize));
+                default:
+                    return View(makesVM.OrderBy(x => x.Name).ToPagedList(pageNumber, pageSize));
+            }
         }
 
         // GET: Makes/Details/5
@@ -73,12 +105,12 @@ namespace MonoProject.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            IMake make = await makeService.GetMakeByIdAsync(id);
-            if (make == null)
+            MakeViewModel makeVM = mapper.Map<MakeViewModel>(await makeService.GetMakeByIdAsync(id));
+            if (makeVM == null)
             {
                 return HttpNotFound();
             }
-            return View(make);
+            return View(makeVM);
         }
 
         //// POST: Makes/Edit/5

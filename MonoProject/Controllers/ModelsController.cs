@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using AutoMapper;
 using MonoProject.Models;
 using MonoProject.Service.Models;
-using Service.Repositories;
 using Service.Service;
 
 namespace MonoProject.Controllers
