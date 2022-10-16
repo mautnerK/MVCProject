@@ -1,9 +1,12 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using AutoMapper;
 using MonoProject.Models;
 using MonoProject.Service.Models;
+using PagedList;
 using Service.Service;
 
 namespace MonoProject.Controllers
@@ -11,8 +14,8 @@ namespace MonoProject.Controllers
     [RoutePrefix("vehiclemodels")]
     public class ModelsController : Controller
     {
-       IModelService modelService;
-       private IMapper mapper;
+        IModelService modelService;
+        private IMapper mapper;
 
 
         public ModelsController(IModelService modelService, IMapper imapper)
@@ -23,9 +26,40 @@ namespace MonoProject.Controllers
 
         [Route]
         // GET: Models
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            return  View(await modelService.GetModelAsync());
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.NameSortParmAbrv = string.IsNullOrEmpty(sortOrder) ? "abrv_desc" : "";
+            var modelsVM = mapper.Map<List<ModelViewModel>>(await modelService.GetModelAsync());
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+            int pageSize = 3;
+            int pageNumber = (page ?? 1);
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                return View(modelsVM.Where(x => x.Name.Contains(searchString) || x.Abrv.Contains(searchString)).ToPagedList(pageNumber, pageSize));
+            }
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    return View(modelsVM.OrderByDescending(x => x.Name).ToPagedList(pageNumber, pageSize));
+                case "Abrv":
+                    return View(modelsVM.OrderBy(x => x.Abrv).ToPagedList(pageNumber, pageSize));
+                case "abrv_desc":
+                    return View(modelsVM.OrderByDescending(x => x.Abrv).ToPagedList(pageNumber, pageSize));
+                default:
+                    return View(modelsVM.OrderBy(x => x.Name).ToPagedList(pageNumber, pageSize));
+            }
         }
 
         // GET: Models/Details/5
@@ -58,7 +92,8 @@ namespace MonoProject.Controllers
         {
             var model = mapper.Map<Model>(modelVM);
             if (ModelState.IsValid)
-            {   await modelService.CreateModelAsync(model);
+            {
+                await modelService.CreateModelAsync(model);
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -119,6 +154,6 @@ namespace MonoProject.Controllers
             return RedirectToAction("Index");
         }
 
-  
+
     }
 }
