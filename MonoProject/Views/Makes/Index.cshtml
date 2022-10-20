@@ -1,4 +1,4 @@
-﻿@model PagedList.IPagedList<MonoProject.Models.MakeViewModel>
+﻿@model MonoProject.Service.Models.PagedList<MonoProject.Models.MakeViewModel>
 @using PagedList.Mvc;
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 @{
@@ -10,10 +10,10 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
-@using (Html.BeginForm("Index", "Make", FormMethod.Get))
+@using (Html.BeginForm())
 {
     <p>
-        Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        Find by name: @Html.TextBox("SearchString")
         <input type="submit" value="Search" />
     </p>
 }
@@ -28,7 +28,7 @@
         <th></th>
     </tr>
 
-    @foreach (var item in Model)
+    @foreach (var item in Model.Subset)
     {
         <tr>
             <td>
@@ -47,7 +47,6 @@
 
 </table>
 <br />
-Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.TotalItemCount
 
-@Html.PagedListPager(Model, page => Url.Action("Index",
-    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+@Html.PagedListPager(Model.Subset, page=> Url.Action("Index", new {page}))

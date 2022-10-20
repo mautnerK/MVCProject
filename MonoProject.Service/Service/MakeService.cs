@@ -1,4 +1,5 @@
 ﻿using MonoProject.Service.Models;
+using Service.Models;
 using Service.Repositories;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -30,9 +31,9 @@ namespace Service.Service
           return await makeRepo.GetMakeByIdAsync(id);
         }
 
-        public async Task<List<Make>> GetMakesAsync()
+        public async Task<PagedList<Make>> GetMakesAsync(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            return await makeRepo.GetMakesAsync();
+            return await makeRepo.GetMakesAsync(sortOrder, currentFilter, searchString, page);
         }
 
         public async Task UpdateMakeAsync(Make make)

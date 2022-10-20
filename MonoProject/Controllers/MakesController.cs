@@ -2,7 +2,7 @@
 using System.Net;
 using System.Web.Mvc;
 using MonoProject.Service.Models.Common;
-using PagedList;
+
 using Service.Service;
 using AutoMapper;
 using MonoProject.Models;
@@ -10,6 +10,8 @@ using MonoProject.Service.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using static MonoProject.App_Profile;
+using Service.Models;
 
 namespace MonoProject.Controllers
 {
@@ -30,35 +32,11 @@ namespace MonoProject.Controllers
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewBag.NameSortParmAbrv = string.IsNullOrEmpty(sortOrder) ? "abrv_desc" : "";
-            var makesVM = mapper.Map<List<MakeViewModel>>(await makeService.GetMakesAsync());
-
-            if (searchString != null)
-            {
-                page = 1;
-            }
-            else
-            {
-                searchString = currentFilter;
-            }
-
             ViewBag.CurrentFilter = searchString;
-            int pageSize = 3;
-            int pageNumber = (page ?? 1);
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                return View(makesVM.Where(x=> x.Name.Contains(searchString) || x.Abrv.Contains(searchString)).ToPagedList(pageNumber, pageSize));
-            }
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    return View(makesVM.OrderByDescending(x => x.Name).ToPagedList(pageNumber, pageSize));
-                case "Abrv":
-                    return View(makesVM.OrderBy(x => x.Abrv).ToPagedList(pageNumber, pageSize));
-                case "abrv_desc":
-                    return View(makesVM.OrderByDescending(x => x.Abrv).ToPagedList(pageNumber, pageSize));
-                default:
-                    return View(makesVM.OrderBy(x => x.Name).ToPagedList(pageNumber, pageSize));
-            }
+            PagedList<Make> makeList = (await makeService.GetMakesAsync(sortOrder, currentFilter, searchString, page));
+            PagedList<MakeViewModel> viewModel = mapper.Map<PagedList<Make>, PagedList<MakeViewModel>>(makeList);
+            return View(viewModel);
+
         }
 
         // GET: Makes/Details/5
