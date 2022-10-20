@@ -46,7 +46,6 @@
 
     </table>
     <br />
-    Page @(Model.MetaData.TotalCount < Model.MetaData.TotalPages ? 0 : Model.MetaData.TotalPages) of @Model.MetaData.TotalPages
     <ul class="pagination">
         @for (int i = 1; i <= Model.MetaData.TotalPages; i++)
         {
