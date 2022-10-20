@@ -1,4 +1,5 @@
 ﻿using MonoProject.Service.Models;
+using Service.Models;
 using Service.Repositories;
 using System;
 using System.Collections.Generic;
@@ -28,9 +29,9 @@ namespace Service.Service
             await modelRepo.DeleteModelAsync(model);
         }
 
-        public async Task<List<Model>> GetModelAsync()
+        public async Task<PagedList<Model>> GetModelAsync(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            return await modelRepo.GetModelsAsync();
+            return await modelRepo.GetModelsAsync(sortOrder, currentFilter, searchString, page);
          }
 
         public async Task<Model> GetModelByIdAsync(int? id)

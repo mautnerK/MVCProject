@@ -38,7 +38,7 @@ namespace MonoProject.Controllers
             return View(viewModel);
 
         }
-
+   
         // GET: Makes/Details/5
         public async Task<ActionResult> Details(int? id)
         {
@@ -114,11 +114,13 @@ namespace MonoProject.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Make make = await makeService.GetMakeByIdAsync(id);
+            MakeViewModel viewModel = mapper.Map<MakeViewModel>(make);
+
             if (make == null)
             {
                 return HttpNotFound();
             }
-            return View(make);
+            return View(viewModel);
         }
 
         // POST: Makes/Delete/5

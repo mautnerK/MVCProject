@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using AutoMapper;
 using MonoProject.Models;
 using MonoProject.Service.Models;
+using Service.Models;
 using Service.Service;
 
 namespace MonoProject.Controllers
@@ -23,43 +24,18 @@ namespace MonoProject.Controllers
             mapper = imapper;
         }
 
-        //[Route]
-        //// GET: Models
-        //public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
-        //{
-        //    ViewBag.CurrentSort = sortOrder;
-        //    ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-        //    ViewBag.NameSortParmAbrv = string.IsNullOrEmpty(sortOrder) ? "abrv_desc" : "";
-        //    var modelsVM = mapper.Map<List<ModelViewModel>>(await modelService.GetModelAsync());
-
-        //    if (searchString != null)
-        //    {
-        //        page = 1;
-        //    }
-        //    else
-        //    {
-        //        searchString = currentFilter;
-        //    }
-
-        //    //ViewBag.CurrentFilter = searchString;
-        //    //int pageSize = 3;
-        //    //int pageNumber = (page ?? 1);
-        //    //if (!string.IsNullOrEmpty(searchString))
-        //    //{
-        //    //    return View(modelsVM.Where(x => x.Name.Contains(searchString) || x.Abrv.Contains(searchString)).ToPagedList(pageNumber, pageSize));
-        //    //}
-        //    //switch (sortOrder)
-        //    //{
-        //    //    case "name_desc":
-        //    //        return View(modelsVM.OrderByDescending(x => x.Name).ToPagedList(pageNumber, pageSize));
-        //    //    case "Abrv":
-        //    //        return View(modelsVM.OrderBy(x => x.Abrv).ToPagedList(pageNumber, pageSize));
-        //    //    case "abrv_desc":
-        //    //        return View(modelsVM.OrderByDescending(x => x.Abrv).ToPagedList(pageNumber, pageSize));
-        //    //    default:
-        //    //        return View(modelsVM.OrderBy(x => x.Name).ToPagedList(pageNumber, pageSize));
-        //    //}
-        //}
+        [Route]
+        // GET: Models
+        public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
+        {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.NameSortParmAbrv = string.IsNullOrEmpty(sortOrder) ? "abrv_desc" : "";
+            ViewBag.CurrentFilter = searchString;
+            PagedList<Model> makeList = await modelService.GetModelAsync(sortOrder, currentFilter, searchString, page);
+            PagedList<ModelViewModel> viewModel = mapper.Map<PagedList<Model>, PagedList<ModelViewModel>>(makeList);
+            return View(viewModel);
+        }
 
         // GET: Models/Details/5
         public async Task<ActionResult> Details(int? id)

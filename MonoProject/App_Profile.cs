@@ -14,7 +14,7 @@ namespace MonoProject
         public App_Profile()
             {
             CreateMap<Make, MakeViewModel>().ReverseMap();
-                CreateMap<Model, ModelViewModel>().ReverseMap();
+            CreateMap<Model, ModelViewModel>().ReverseMap();
         }
         }
     }
