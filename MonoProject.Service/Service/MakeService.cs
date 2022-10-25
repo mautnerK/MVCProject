@@ -31,9 +31,11 @@ namespace Service.Service
           return await makeRepo.GetMakeByIdAsync(id);
         }
 
-        public async Task<PagedList<Make>> GetMakesAsync(string sortOrder, string currentFilter, string searchString, int? page)
+        public async Task<PagedList<Make>> GetMakesAsync(PaginationData pagination)
         {
-            return await makeRepo.GetMakesAsync(sortOrder, currentFilter, searchString, page);
+      
+
+            return await makeRepo.GetMakesAsync(pagination);
         }
 
         public async Task UpdateMakeAsync(Make make)

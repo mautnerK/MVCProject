@@ -2,7 +2,7 @@
 @{
     ViewBag.Title = "Index";
 }
-
+@using Service.Models;
 <h2>Index</h2>
 
 <p>
@@ -19,10 +19,10 @@
     <table class="table">
         <tr>
             <th>
-                @Html.ActionLink("Name", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+                @Html.ActionLink("Name", "Index", new PaginationData() { SortOrder = ViewBag.NameSortParm.Equals("name_desc") ? "name" : "name_desc", SearchString = ViewBag.CurrentFilter })
             </th>
             <th>
-                @Html.ActionLink("Abrv", "Index", new { sortOrder = ViewBag.NameSortParmAbrv, currentFilter = ViewBag.CurrentFilter })
+                @Html.ActionLink("Abrv", "Index", new PaginationData() {SortOrder = ViewBag.NameSortParmAbrv.Equals("abrv_desc") ? "abrv" : "abrv_desc", SearchString = ViewBag.CurrentFilter })
             </th>
             <th></th>
         </tr>
@@ -47,13 +47,12 @@
     </table>
     <br />
     <ul class="pagination">
-        @for (int i = 1; i <= Model.MetaData.TotalPages; i++)
+        @for (int i = 1; i <= Model.PaginationData.TotalPages; i++)
         {
         <li class="page-item">
-            @if (i != Model.MetaData.CurrentPage)
+            @if (i != Model.PaginationData.CurrentPage)
             {
-                @Html.ActionLink(i.ToString(), "Index", new { page = i })
-
+                @Html.ActionLink(i.ToString(), "Index", new PaginationData() { SortOrder = string.IsNullOrEmpty(ViewBag.NameSortParmAbrv) && string.IsNullOrEmpty(ViewBag.NameSortParm) ? null : string.IsNullOrEmpty(ViewBag.NameSortParmAbrv) ? ViewBag.NameSortParm : ViewBag.NameSortParmAbrv, SearchString = ViewBag.CurrentFilter, CurrentPage = i })
             }
             else
             {

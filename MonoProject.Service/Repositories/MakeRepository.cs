@@ -34,45 +34,41 @@ namespace Service.Repositories
            return await db.Makes.FindAsync(id);
         }
 
-        public async Task<PagedList<Make>> GetMakesAsync(string sortOrder, string currentFilter, string searchString, int? page)
+        public async Task<PagedList<Make>> GetMakesAsync(PaginationData pagination)
         {
-            int pageSize = 3;
-            int pageNumber = (page ?? 1);
-            if (searchString != null)
+            int totalCount;
+            var query = db.Makes.AsQueryable();
+
+
+            if (!string.IsNullOrEmpty(pagination.SearchString))
             {
-                page = 1;
+                totalCount = db.Makes.Where(x => x.Name.ToLower().Contains(pagination.SearchString.ToLower()) || x.Abrv.ToLower().Contains(pagination.SearchString.ToLower())).Count();
+                 query = query.Where(x => x.Name.ToLower().Contains(pagination.SearchString.ToLower())
+                || x.Abrv.ToLower().Contains(pagination.SearchString.ToLower()));
             }
             else
             {
-                searchString = currentFilter;
+                totalCount = db.Makes.Count();
             }
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                List<Make> list = new List<Make>();
-                list = await db.Makes.Where(x => x.Name.Contains(searchString) || x.Abrv.Contains(searchString)).ToListAsync();
-                return PagedList<Make>.ToPagedList(list, pageNumber, pageSize);
-            }
-            else
-            {
-                List<Make> lista = new List<Make>();
-                switch (sortOrder)
+              
+                switch (pagination.SortOrder)
                 {
                     case "name_desc":
-                    
-                        lista = await db.Makes.OrderByDescending(x => x.Name).ToListAsync();
-                        return PagedList<Make>.ToPagedList(lista, pageNumber, pageSize);
+                       query = query.OrderByDescending(x => x.Name);
+                    break;
                     case "Abrv":
-                        lista = await db.Makes.OrderBy(x => x.Abrv).ToListAsync();
-                        return PagedList<Make>.ToPagedList(lista, pageNumber, pageSize);
+                       query = query.OrderBy(x => x.Abrv);
+                    break;
                     case "abrv_desc":
-                        lista = await db.Makes.OrderByDescending(x => x.Abrv).ToListAsync();
-                        return PagedList<Make>.ToPagedList(lista, pageNumber, pageSize);
+                       query = query.OrderByDescending(x => x.Abrv);
+                    break;
                     default:
-                        lista = await db.Makes.OrderBy(x => x.Name).ToListAsync();
-                        return PagedList<Make>.ToPagedList(lista, pageNumber, pageSize);
-
-                }
+                    query = query.OrderBy(x => x.Name);
+                    break;
             }
+           var finalQuery = await query.Skip((pagination.CurrentPage - 1) * pagination.PageSize)
+              .Take(pagination.PageSize).ToListAsync();
+            return PagedList<Make>.ToPagedList(finalQuery, totalCount, pagination);
 
         }
 

@@ -36,44 +36,42 @@ namespace Service.Repositories
           return await  db.Models.FindAsync(id);
         }
 
-        public async Task<PagedList<Model>> GetModelsAsync(string sortOrder, string currentFilter, string searchString, int? page)
+        public async Task<PagedList<Model>> GetModelsAsync(PaginationData pagination)
         {
-            int pageSize = 3;
-            int pageNumber = (page ?? 1);
-            if (searchString != null)
-            {
-                page = 1;
-            }
-            else
-            {
-                searchString = currentFilter;
-            }
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                List<Model> list = new List<Model>();
-                list = await db.Models.Where(x => x.Name.Contains(searchString) || x.Abrv.Contains(searchString)).ToListAsync();
-                return PagedList<Model>.ToPagedList(list, pageNumber, pageSize);
-            }
-            else
-            {
-                List<Model> lista = new List<Model>();
-                switch (sortOrder)
-                {
-                    case "name_desc":
 
-                        lista = await db.Models.OrderByDescending(x => x.Name).ToListAsync();
-                        return PagedList<Model>.ToPagedList(lista, pageNumber, pageSize);
-                    case "Abrv":
-                        lista = await db.Models.OrderBy(x => x.Abrv).ToListAsync();
-                        return PagedList<Model>.ToPagedList(lista, pageNumber, pageSize);
-                    case "abrv_desc":
-                        lista = await db.Models.OrderByDescending(x => x.Abrv).ToListAsync();
-                        return PagedList<Model>.ToPagedList(lista, pageNumber, pageSize);
-                    default:
-                        lista = await db.Models.OrderBy(x => x.Name).ToListAsync();
-                        return PagedList<Model>.ToPagedList(lista, pageNumber, pageSize);
-                }
+            int totalCount;
+            var query = db.Models.AsQueryable();
+
+
+            if (!string.IsNullOrEmpty(pagination.SearchString))
+            {
+                totalCount = db.Models.Where(x => x.Name.ToLower().Contains(pagination.SearchString.ToLower()) || x.Abrv.ToLower().Contains(pagination.SearchString.ToLower())).Count();
+                query = query.Where(x => x.Name.ToLower().Contains(pagination.SearchString.ToLower())
+               || x.Abrv.ToLower().Contains(pagination.SearchString.ToLower()));
             }
+            else
+            {
+                totalCount = db.Models.Count();
+            }
+
+            switch (pagination.SortOrder)
+            {
+                case "name_desc":
+                    query = query.OrderByDescending(x => x.Name);
+                    break;
+                case "Abrv":
+                    query = query.OrderBy(x => x.Abrv);
+                    break;
+                case "abrv_desc":
+                    query = query.OrderByDescending(x => x.Abrv);
+                    break;
+                default:
+                    query = query.OrderBy(x => x.Name);
+                    break;
+            }
+            var finalQuery = await query.Skip((pagination.CurrentPage - 1) * pagination.PageSize)
+               .Take(pagination.PageSize).ToListAsync();
+            return PagedList<Model>.ToPagedList(finalQuery, totalCount, pagination);
         }
 
         public async Task UpdateModelAsync(Model model)

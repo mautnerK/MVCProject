@@ -7,7 +7,7 @@ namespace Service.Service
 {
     public interface IModelService
     {
-        Task<PagedList<Model>> GetModelAsync(string sortOrder, string currentFilter, string searchString, int? page);
+        Task<PagedList<Model>> GetModelAsync(PaginationData pagination);
         Task<Model> GetModelByIdAsync(int? id);
         Task UpdateModelAsync(Model model);
         Task CreateModelAsync(Model model);

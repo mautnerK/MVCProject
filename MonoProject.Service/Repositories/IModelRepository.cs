@@ -7,7 +7,7 @@ namespace Service.Repositories
 {
     public interface IModelRepository
     {
-        Task<PagedList<Model>> GetModelsAsync(string sortOrder, string currentFilter, string searchString, int? page);
+        Task<PagedList<Model>> GetModelsAsync(PaginationData pagination);
         Task<Model> GetModelByIdAsync(int? id);
         Task UpdateModelAsync(Model model);
         Task CreateModelAsync(Model model);

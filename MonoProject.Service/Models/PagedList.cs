@@ -1,43 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 
 namespace Service.Models
 {
-    public class MetaData
+    public class PaginationData
     {
+        public string SortOrder { get; set; } = "name";
+        public string CurrentFilter { get; set; }
+        public string SearchString { get; set; } = "";
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; }
         public int PageSize { get; set; } = 3;
         public int TotalCount { get; set; }
-        public bool HasPrevious => CurrentPage > 1;
-        public bool HasNext => CurrentPage < TotalPages;
-        public MetaData() { }
+        private bool HasPrevious => CurrentPage > 1;
+        private bool HasNext => CurrentPage < TotalPages;
+        public PaginationData() { }
     }
     public class PagedList<T> 
     {
         public List<T> Items;
         public PagedList(){}
-        public MetaData MetaData { get; set; }
-        public PagedList(List<T> items, int count, int pageNumber, int pageSize)
+        public PaginationData PaginationData { get; set; }
+        public PagedList(List<T> items, int count, PaginationData pagination)
         {
-            MetaData = new MetaData
-            {
-                TotalCount = count,
-                PageSize = pageSize,
-                CurrentPage = pageNumber,
-                TotalPages = (int)Math.Ceiling(count / (double)pageSize)
-            };
+            PaginationData = pagination;
+
+            PaginationData.TotalPages = (int)Math.Ceiling(count / (double)pagination.PageSize);
+            
             Items = new List<T>();
             Items.AddRange(items);
         }
-        public static PagedList<T> ToPagedList(IEnumerable<T> source, int pageNumber, int pageSize)
+        public static PagedList<T> ToPagedList(IEnumerable<T> source,int totalCount, PaginationData pagination)
         {
-            var count = source.Count();
-            var items = source
-              .Skip((pageNumber - 1) * pageSize)
-              .Take(pageSize).ToList();
-            return new PagedList<T>(items, count, pageNumber, pageSize);
+            return new PagedList<T>(source.ToList(), totalCount, pagination);
         }
     }
 }

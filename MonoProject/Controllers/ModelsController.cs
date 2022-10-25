@@ -26,13 +26,13 @@ namespace MonoProject.Controllers
 
         [Route]
         // GET: Models
-        public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
+        public async Task<ActionResult> Index(PaginationData pagination)
         {
-            ViewBag.CurrentSort = sortOrder;
-            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewBag.NameSortParmAbrv = string.IsNullOrEmpty(sortOrder) ? "abrv_desc" : "";
-            ViewBag.CurrentFilter = searchString;
-            PagedList<Model> makeList = await modelService.GetModelAsync(sortOrder, currentFilter, searchString, page);
+            ViewBag.CurrentSort = pagination.SortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(pagination.SortOrder) ? "name" : pagination.SortOrder;
+            ViewBag.NameSortParmAbrv = string.IsNullOrEmpty(pagination.SortOrder) ? "Abrv" : pagination.SortOrder;
+            ViewBag.CurrentFilter = pagination.SearchString;
+            PagedList<Model> makeList = await modelService.GetModelAsync(pagination);
             PagedList<ModelViewModel> viewModel = mapper.Map<PagedList<Model>, PagedList<ModelViewModel>>(makeList);
             return View(viewModel);
         }
