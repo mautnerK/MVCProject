@@ -10,7 +10,7 @@ namespace Service.Repositories
 {
     public class MakeRepository : IMakeRepository
     {
-        private VehiclesDbContext db;
+        private readonly VehiclesDbContext db;
 
         public MakeRepository(VehiclesDbContext db)
         {
@@ -24,7 +24,7 @@ namespace Service.Repositories
         }
 
             public async Task DeleteMakeAsync(Make make)
-        {
+        {   
             db.Makes.Remove(make);
             await db.SaveChangesAsync();
         }
@@ -33,25 +33,29 @@ namespace Service.Repositories
         {
            return await db.Makes.FindAsync(id);
         }
+        public async Task<List<Make>> GetAllMakesAsync()
+        {
+            return await db.Makes.ToListAsync();
+        }
 
-        public async Task<PagedList<Make>> GetMakesAsync(PaginationData pagination)
+        public async Task<PagedList<Make>> GetMakesAsync(PaginationData pagination, FilteringData filtering, SortingData sorting)
         {
             int totalCount;
             var query = db.Makes.AsQueryable();
 
 
-            if (!string.IsNullOrEmpty(pagination.SearchString))
+            if (!string.IsNullOrEmpty(filtering.SearchString))
             {
-                totalCount = db.Makes.Where(x => x.Name.ToLower().Contains(pagination.SearchString.ToLower()) || x.Abrv.ToLower().Contains(pagination.SearchString.ToLower())).Count();
-                 query = query.Where(x => x.Name.ToLower().Contains(pagination.SearchString.ToLower())
-                || x.Abrv.ToLower().Contains(pagination.SearchString.ToLower()));
+                totalCount = db.Makes.Where(x => x.Name.ToLower().Contains(filtering.SearchString.ToLower()) || x.Abrv.ToLower().Contains(filtering.SearchString.ToLower())).Count();
+                 query = query.Where(x => x.Name.ToLower().Contains(filtering.SearchString.ToLower())
+                || x.Abrv.ToLower().Contains(filtering.SearchString.ToLower()));
             }
             else
             {
                 totalCount = db.Makes.Count();
             }
               
-                switch (pagination.SortOrder)
+                switch (sorting.SortOrder)
                 {
                     case "name_desc":
                        query = query.OrderByDescending(x => x.Name);

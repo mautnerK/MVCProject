@@ -2,7 +2,7 @@
 @{
     ViewBag.Title = "Index";
 }
-@using Service.Models;
+
 <h2>Index</h2>
 
 <p>
@@ -11,7 +11,7 @@
 @using (Html.BeginForm())
 {
     <p>
-        Find by name: @Html.TextBox("SearchString")
+        Find by name: @Html.TextBox("filtering")
         <input type="submit" value="Search" />
     </p>
 }
@@ -19,10 +19,20 @@
     <table class="table">
         <tr>
             <th>
-                @Html.ActionLink("Name", "Index", new PaginationData() { SortOrder = ViewBag.NameSortParm.Equals("name_desc") ? "name" : "name_desc", SearchString = ViewBag.CurrentFilter })
+                @Html.ActionLink("Abrv", "Index", new
+           {
+               currentPage = ViewBag.Pagination,
+               sorting = ViewBag.NameSortParm.Equals("name_desc") ? "name" : "name_desc",
+               filtering = ViewBag.CurrentFilter 
+                })
             </th>
             <th>
-                @Html.ActionLink("Abrv", "Index", new PaginationData() {SortOrder = ViewBag.NameSortParmAbrv.Equals("abrv_desc") ? "abrv" : "abrv_desc", SearchString = ViewBag.CurrentFilter })
+                @Html.ActionLink("Abrv", "Index", new
+           {
+               currentPage = ViewBag.Pagination,
+               sorting = ViewBag.NameSortParm.Equals("abrv_desc") ? "abrv" : "abrv_desc",
+               filtering = ViewBag.CurrentFilter
+           })
             </th>
             <th></th>
         </tr>
@@ -49,16 +59,20 @@
     <ul class="pagination">
         @for (int i = 1; i <= Model.PaginationData.TotalPages; i++)
         {
-        <li class="page-item">
-            @if (i != Model.PaginationData.CurrentPage)
-            {
-                @Html.ActionLink(i.ToString(), "Index", new PaginationData() { SortOrder = string.IsNullOrEmpty(ViewBag.NameSortParmAbrv) && string.IsNullOrEmpty(ViewBag.NameSortParm) ? null : string.IsNullOrEmpty(ViewBag.NameSortParmAbrv) ? ViewBag.NameSortParm : ViewBag.NameSortParmAbrv, SearchString = ViewBag.CurrentFilter, CurrentPage = i })
-            }
-            else
-            {
-                <a class="page-link">@i</a>
-            }
-        </li>
+            <li class="page-item">
+                @if (i != Model.PaginationData.CurrentPage)
+                {
+                    @Html.ActionLink(i.ToString(), "Index", new
+               {
+                   currentPage = i,
+                   sorting = ViewBag.CurrentSort,
+                   filtering = ViewBag.CurrentFilter
+               })}
+                else
+                {
+                    <a class="page-link">@i</a>
+                }
+            </li>
         }
     </ul>
     <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />

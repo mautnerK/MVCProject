@@ -27,13 +27,17 @@ namespace MonoProject.Controllers
         }
 
         // GET: Makes
-        public async Task<ActionResult> Index(PaginationData pagination)
+        public async Task<ActionResult> Index( int currentPage = 1, string filtering = "", string sorting = "name")
         {
-            ViewBag.CurrentSort = pagination.SortOrder;
-            ViewBag.NameSortParm = string.IsNullOrEmpty(pagination.SortOrder) ? "name" : pagination.SortOrder;
-            ViewBag.NameSortParmAbrv = string.IsNullOrEmpty(pagination.SortOrder) ? "Abrv" : pagination.SortOrder;
-            ViewBag.CurrentFilter = pagination.SearchString;
-            PagedList<Make> makeList = (await makeService.GetMakesAsync(pagination));
+            ViewBag.Pagination = currentPage;
+            ViewBag.CurrentSort = sorting;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sorting) ? "Name" : sorting;
+            ViewBag.NameSortParmAbrv = string.IsNullOrEmpty(sorting) ? "Abrv" : sorting;
+            ViewBag.CurrentFilter = filtering;
+            PaginationData paginationData = new PaginationData { CurrentPage = currentPage };
+            FilteringData filteringData = new FilteringData { SearchString = filtering };
+            SortingData sortingData = new SortingData { SortOrder = sorting };
+            PagedList<Make> makeList = await makeService.GetMakesAsync(paginationData, filteringData, sortingData);
             PagedList<MakeViewModel> viewModel = mapper.Map<PagedList<Make>, PagedList<MakeViewModel>>(makeList);
             return View(viewModel);
 

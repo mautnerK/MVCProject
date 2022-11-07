@@ -31,13 +31,14 @@ namespace Service.Service
           return await makeRepo.GetMakeByIdAsync(id);
         }
 
-        public async Task<PagedList<Make>> GetMakesAsync(PaginationData pagination)
+        public async Task<PagedList<Make>> GetMakesAsync(PaginationData pagination, FilteringData filtering, SortingData sorting)
         {
-      
-
-            return await makeRepo.GetMakesAsync(pagination);
+            return await makeRepo.GetMakesAsync(pagination, filtering, sorting);
         }
-
+        public async Task<List<Make>> GetAllMakesAsync()
+        {
+            return await makeRepo.GetAllMakesAsync();
+        }
         public async Task UpdateMakeAsync(Make make)
         {
             await makeRepo.UpdateMakeAsync(make);

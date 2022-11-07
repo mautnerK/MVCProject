@@ -29,9 +29,9 @@ namespace Service.Service
             await modelRepo.DeleteModelAsync(model);
         }
 
-        public async Task<PagedList<Model>> GetModelAsync(PaginationData pagination)
+        public async Task<PagedList<Model>> GetModelAsync(PaginationData pagination, FilteringData filtering, SortingData sorting)
         {
-            return await modelRepo.GetModelsAsync(pagination);
+            return await modelRepo.GetModelsAsync(pagination, filtering, sorting);
          }
 
         public async Task<Model> GetModelByIdAsync(int? id)

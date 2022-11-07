@@ -15,24 +15,29 @@ namespace MonoProject.Controllers
     public class ModelsController : Controller
     {
         IModelService modelService;
+        IMakeService makeService;
         private IMapper mapper;
 
 
-        public ModelsController(IModelService modelService, IMapper imapper)
+        public ModelsController(IModelService modelService, IMakeService makeService, IMapper imapper)
         {
+            this.makeService = makeService;
             this.modelService = modelService;
             mapper = imapper;
         }
 
         [Route]
         // GET: Models
-        public async Task<ActionResult> Index(PaginationData pagination)
+        public async Task<ActionResult> Index(int currentPage = 1, string filtering = "", string sorting = "name")
         {
-            ViewBag.CurrentSort = pagination.SortOrder;
-            ViewBag.NameSortParm = string.IsNullOrEmpty(pagination.SortOrder) ? "name" : pagination.SortOrder;
-            ViewBag.NameSortParmAbrv = string.IsNullOrEmpty(pagination.SortOrder) ? "Abrv" : pagination.SortOrder;
-            ViewBag.CurrentFilter = pagination.SearchString;
-            PagedList<Model> makeList = await modelService.GetModelAsync(pagination);
+            ViewBag.CurrentSort = sorting;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sorting) ? "name" : sorting;
+            ViewBag.NameSortParmAbrv = string.IsNullOrEmpty(sorting) ? "Abrv" : sorting;
+            ViewBag.CurrentFilter = filtering;
+            PaginationData paginationData = new PaginationData { CurrentPage = currentPage };
+            FilteringData filteringData = new FilteringData { SearchString = filtering };
+            SortingData sortingData = new SortingData { SortOrder = sorting };
+            PagedList<Model> makeList = await modelService.GetModelAsync(paginationData, filteringData, sortingData);
             PagedList<ModelViewModel> viewModel = mapper.Map<PagedList<Model>, PagedList<ModelViewModel>>(makeList);
             return View(viewModel);
         }
@@ -53,8 +58,9 @@ namespace MonoProject.Controllers
         }
 
         // GET: Models/Create
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
+            ViewBag.MakeList = new SelectList(await makeService.GetAllMakesAsync(),"id","Name","Abrv");
             return View();
         }
 
@@ -63,12 +69,18 @@ namespace MonoProject.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "ID,Name,Abrv")] ModelViewModel modelVM)
+        public async Task<ActionResult> Create([Bind(Include = "ID,Name,Abrv,Make")] CreateModelViewModel modelCVM)
         {
+            ModelViewModel modelVM = new ModelViewModel();
+            modelVM.Name = modelCVM.Name;
+            modelVM.Abrv = modelCVM.Abrv;
             var model = mapper.Map<Model>(modelVM);
+            model.Make = await makeService.GetMakeByIdAsync(modelCVM.Make);
+
             if (ModelState.IsValid)
             {
                 await modelService.CreateModelAsync(model);
+
                 return RedirectToAction("Index");
             }
             return View(model);

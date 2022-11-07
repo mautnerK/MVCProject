@@ -8,7 +8,7 @@ namespace MonoProject.App_Start
     {
         public override void Load()
         {
-            Bind<System.Data.Entity.DbContext>().To<Service.Data.VehiclesDbContext>();
+            Bind<System.Data.Entity.DbContext>().To<Service.Data.VehiclesDbContext>().InSingletonScope();
             Bind<IMakeRepository>().To<MakeRepository>();
             Bind<IMakeService>().To<MakeService>();
             Bind<IModelRepository>().To<ModelRepository>();

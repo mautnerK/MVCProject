@@ -7,7 +7,8 @@ namespace Service.Repositories
 {
     public interface IMakeRepository
     {
-        Task<PagedList<Make>> GetMakesAsync(PaginationData pagination);
+        Task<PagedList<Make>> GetMakesAsync(PaginationData pagination, FilteringData filtering, SortingData sorting);
+        Task<List<Make>> GetAllMakesAsync();
         Task<Make> GetMakeByIdAsync(int? id);
         Task UpdateMakeAsync(Make make);
         Task CreateMakeAsync(Make make);

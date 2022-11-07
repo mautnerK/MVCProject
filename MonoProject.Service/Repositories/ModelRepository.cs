@@ -12,7 +12,7 @@ namespace Service.Repositories
 {
     public class ModelRepository : IModelRepository
     {
-        private VehiclesDbContext db;
+        private readonly VehiclesDbContext db;
 
         public ModelRepository(VehiclesDbContext db)
         {
@@ -21,6 +21,7 @@ namespace Service.Repositories
 
         public async Task CreateModelAsync(Model model)
         {
+            db.Makes.Attach(model.Make);
             db.Models.Add(model);
             await   db.SaveChangesAsync();
         }
@@ -36,25 +37,27 @@ namespace Service.Repositories
           return await  db.Models.FindAsync(id);
         }
 
-        public async Task<PagedList<Model>> GetModelsAsync(PaginationData pagination)
+        public async Task<PagedList<Model>> GetModelsAsync(PaginationData pagination, FilteringData filtering, SortingData sorting)
         {
 
             int totalCount;
             var query = db.Models.AsQueryable();
 
 
-            if (!string.IsNullOrEmpty(pagination.SearchString))
+            if (!string.IsNullOrEmpty(filtering.SearchString))
             {
-                totalCount = db.Models.Where(x => x.Name.ToLower().Contains(pagination.SearchString.ToLower()) || x.Abrv.ToLower().Contains(pagination.SearchString.ToLower())).Count();
-                query = query.Where(x => x.Name.ToLower().Contains(pagination.SearchString.ToLower())
-               || x.Abrv.ToLower().Contains(pagination.SearchString.ToLower()));
+                totalCount = db.Models.Where(x => x.Make.Name.ToLower().Contains(filtering.SearchString.ToLower()) || x.Make.Abrv.ToLower().Contains(filtering.SearchString.ToLower())
+                    || x.Name.ToLower().Contains(filtering.SearchString.ToLower()) || x.Abrv.ToLower().Contains(filtering.SearchString.ToLower())).Count();
+                query = query.Where(x => x.Name.ToLower().Contains(filtering.SearchString.ToLower())
+               || x.Abrv.ToLower().Contains(filtering.SearchString.ToLower()) || x.Make.Name.ToLower().Contains(filtering.SearchString.ToLower()) ||
+               x.Make.Abrv.ToLower().Contains(filtering.SearchString.ToLower()));
             }
             else
             {
                 totalCount = db.Models.Count();
             }
 
-            switch (pagination.SortOrder)
+            switch (sorting.SortOrder)
             {
                 case "name_desc":
                     query = query.OrderByDescending(x => x.Name);

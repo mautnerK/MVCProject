@@ -5,11 +5,20 @@ using System.Linq;
 
 namespace Service.Models
 {
-    public class PaginationData
+
+    public class SortingData
     {
         public string SortOrder { get; set; } = "name";
+        public SortingData() { }
+    }
+    public class FilteringData
+    {
         public string CurrentFilter { get; set; }
         public string SearchString { get; set; } = "";
+        public FilteringData() { }
+    }
+    public class PaginationData
+    {
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; }
         public int PageSize { get; set; } = 3;
